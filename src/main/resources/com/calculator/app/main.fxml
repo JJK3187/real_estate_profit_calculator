@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.calculator.app.MainController">
+    <VBox spacing="16" style="-fx-padding: 20; -fx-background-color: #f5f5f5;">
+
+        <!-- 제목 -->
+        <Label text="부동산 수익 계산기" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+        <!-- 대출 정보 입력 -->
+        <TitledPane text="대출 정보 입력" collapsible="false"
+                    style="-fx-font-size: 14px; -fx-font-weight: bold;">
+            <GridPane hgap="12" vgap="10">
+                <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+                <Label text="대출 금액 (원):" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="loanAmountField" promptText="예: 500000000" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="220"/>
+
+                <Label text="연 이자율 (%):" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="annualRateField" promptText="예: 5.0" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="대출 기간 (개월):" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="loanTermField" promptText="예: 240 (20년)" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="거치 기간 (개월):" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="graceTermField" promptText="예: 12 (없으면 0)" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="월 기타 지출 (원):" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="maintenanceCostField" promptText="예: 500000 (관리비 등)" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="목표 월 순이익 (원):" GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-font-size: 13px;"/>
+                <TextField fx:id="targetProfitField" promptText="예: 1000000 (0이면 손익분기점)" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            </GridPane>
+        </TitledPane>
+
+        <!-- 상환 방식 선택 -->
+        <TitledPane text="대출 상환 방식" collapsible="false" style="-fx-font-size: 14px; -fx-font-weight: bold;">
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                <RadioButton fx:id="equalPaymentRadio" text="원리금 균등 상환" selected="true"/>
+                <RadioButton fx:id="equalPrincipalRadio" text="원금 균등 상환"/>
+                <RadioButton fx:id="bulletRadio" text="만기 일시 상환"/>
+            </HBox>
+        </TitledPane>
+
+        <!-- 계산 버튼 -->
+        <Button text="계산하기" onAction="#onCalculate" prefWidth="200" prefHeight="40"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6;"/>
+
+        <!-- 결과 영역 -->
+        <TitledPane fx:id="resultPane" text="계산 결과" collapsible="false"
+                    style="-fx-font-size: 14px; -fx-font-weight: bold;" visible="false">
+            <VBox spacing="10">
+                <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+                <!-- 대출 상환 요약 -->
+                <Label text="[ 대출 상환 요약 ]" style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #2c3e50;"/>
+                <GridPane hgap="16" vgap="6">
+                    <Label text="첫 달 월 상환액:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="firstMonthPaymentLabel" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-weight: bold;"/>
+
+                    <Label text="총 상환 금액:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="totalRepaymentLabel" GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-weight: bold;"/>
+
+                    <Label text="총 이자 비용:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="totalInterestLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+                </GridPane>
+
+                <Separator/>
+
+                <!-- 월 지출 및 임대료 -->
+                <Label text="[ 월 지출 및 최소 임대료 ]" style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #2c3e50;"/>
+                <GridPane hgap="16" vgap="6">
+                    <Label text="월 대출 상환액 (첫 달):" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="monthlyLoanLabel" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-weight: bold;"/>
+
+                    <Label text="월 기타 지출:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="monthlyMaintenanceLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <Label text="월 총 지출:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="totalMonthlyExpenseLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-weight: bold;"/>
+                </GridPane>
+
+                <Separator/>
+
+                <Label fx:id="minRentLabel" text="손익분기 최소 월 임대료: -"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                <Label fx:id="maxRentLabel" text=""
+                       style="-fx-font-size: 13px; -fx-text-fill: #8e44ad;"/>
+
+                <Separator/>
+
+                <!-- 월별 상환 스케줄 테이블 -->
+                <Label text="[ 월별 상환 스케줄 ]" style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #2c3e50;"/>
+                <TableView fx:id="scheduleTable" prefHeight="300">
+                    <columns>
+                        <TableColumn fx:id="colMonth" text="월" prefWidth="50"/>
+                        <TableColumn fx:id="colPrincipal" text="원금 상환" prefWidth="130"/>
+                        <TableColumn fx:id="colInterest" text="이자" prefWidth="130"/>
+                        <TableColumn fx:id="colTotal" text="월 납부액" prefWidth="130"/>
+                        <TableColumn fx:id="colBalance" text="잔여 원금" prefWidth="140"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </TitledPane>
+
+        <!-- 에러 메시지 -->
+        <Label fx:id="errorLabel" text="" style="-fx-text-fill: red; -fx-font-size: 13px;" wrapText="true"/>
+
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,1 @@
+rootProject.name = "real_estate_profit_calculator"
