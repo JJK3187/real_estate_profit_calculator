@@ -38,3 +38,43 @@ tasks.withType<JavaCompile> {
 tasks.test {
     useJUnitPlatform()
 }
+
+// fat jar: 모든 의존성을 포함한 단일 jar 생성
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "com.calculator.app.Main"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+}
+
+// jpackage로 .exe 설치 파일 생성
+tasks.register<Exec>("jpackage") {
+    dependsOn(tasks.jar)
+    val jpackagePath = "C:\\Program Files\\Java\\jdk-17\\bin\\jpackage.exe"
+    val outputDir = layout.buildDirectory.dir("installer").get().asFile.absolutePath
+    val wixBinPath = "C:\\Program Files (x86)\\WiX Toolset v3.14\\bin"
+
+    environment("PATH", System.getenv("PATH") + ";$wixBinPath")
+
+    commandLine(
+        jpackagePath,
+        "--input", layout.buildDirectory.dir("libs").get().asFile.absolutePath,
+        "--main-jar", "${project.name}-${project.version}.jar",
+        "--main-class", "com.calculator.app.Main",
+        "--name", "RealEstateProfitCalculator",
+        "--app-version", "1.0.0",
+        "--dest", outputDir,
+        "--type", "exe",
+        "--win-dir-chooser",
+        "--win-shortcut",
+        "--win-menu",
+        "--description", "Real Estate Profit Calculator",
+        "--vendor", "JJK"
+    )
+
+    doFirst {
+        file(outputDir).mkdirs()
+        println("jpackage 실행 중...")
+    }
+}
